@@ -4,16 +4,23 @@ const config = require("./config");
 
 /**
  * Execute a run.sh command and return the raw output.
+ * Optionally pass an ad account ID to override the default.
  */
-function runCommand(command, args = []) {
+function runCommand(command, args = [], accountId = null) {
   return new Promise((resolve, reject) => {
-    const allArgs = [command, ...args];
+    const allArgs = accountId
+      ? [command, "--account", accountId, ...args]
+      : [command, ...args];
 
     execFile("bash", [config.runScript, ...allArgs], {
       cwd: config.projectRoot,
-      timeout: 60_000,
+      timeout: 90_000,
       maxBuffer: 1024 * 1024,
-      env: { ...process.env, PATH: process.env.PATH },
+      env: {
+        ...process.env,
+        PATH: process.env.PATH,
+        ...(accountId ? { META_AD_ACCOUNT: accountId } : {}),
+      },
     }, (error, stdout, stderr) => {
       if (error) {
         reject(new Error(`Command "${command}" failed: ${stderr || error.message}`));
@@ -26,16 +33,21 @@ function runCommand(command, args = []) {
 
 /**
  * Execute a pixel/capi script directly.
+ * Optionally pass an ad account ID to override the default.
  */
-function runScript(scriptPath, args = []) {
+function runScript(scriptPath, args = [], accountId = null) {
   const fullPath = path.resolve(config.skillsDir, scriptPath);
 
   return new Promise((resolve, reject) => {
     execFile("bash", [fullPath, ...args], {
       cwd: config.projectRoot,
-      timeout: 60_000,
+      timeout: 90_000,
       maxBuffer: 1024 * 1024,
-      env: { ...process.env, PATH: process.env.PATH },
+      env: {
+        ...process.env,
+        PATH: process.env.PATH,
+        ...(accountId ? { META_AD_ACCOUNT: accountId } : {}),
+      },
     }, (error, stdout, stderr) => {
       if (error) {
         reject(new Error(`Script "${scriptPath}" failed: ${stderr || error.message}`));

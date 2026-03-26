@@ -113,6 +113,58 @@ CLICKUP_API_TOKEN=pk_your-token
 CLICKUP_LIST_ID=your-list-id
 ```
 
+### Multi-Account Setup (Agency / Multiple Clients)
+
+If you manage ads for multiple clients, create `server/accounts.json`:
+
+```bash
+cp server/accounts.example.json server/accounts.json
+```
+
+```json
+{
+  "accounts": [
+    {
+      "id": "act_111111111",
+      "name": "Acme Corp",
+      "slackChannel": "C0ACME00000",
+      "clickupListId": "list_acme",
+      "benchmarks": { "target_cpa": 25.00, "target_roas": 3.0 }
+    },
+    {
+      "id": "act_222222222",
+      "name": "Globex Inc",
+      "slackChannel": "C0GLOBEX000",
+      "clickupListId": "list_globex",
+      "benchmarks": { "target_cpa": 30.00, "target_roas": 2.5 }
+    }
+  ]
+}
+```
+
+**How it works:**
+
+| Setup | What happens |
+|-------|-------------|
+| **1 Slack channel per client** | `#acme-ads` auto-routes to `act_111`, `#globex-ads` auto-routes to `act_222` |
+| **Mention by name** | `@crimsonmeta bleeders for Acme` — works from any channel |
+| **Mention by ID** | `@crimsonmeta overview act_111111111` — explicit account |
+| **Daily briefings** | Runs for ALL accounts, posts each to the right channel |
+| **ClickUp tasks** | Each client's tasks go to their own ClickUp list |
+| **No config?** | Falls back to single-account mode (uses `META_AD_ACCOUNT` env var) |
+
+To authenticate multiple accounts with `social-cli`:
+
+```bash
+# Authenticate once (covers all accounts under your Business Manager)
+social auth login
+
+# Verify you can see all accounts
+social marketing accounts
+
+# No need to set a default — Crimson switches automatically
+```
+
 ### Talking to @crimsonmeta on Slack
 
 Message `@crimsonmeta` in any channel or DM — just talk naturally:

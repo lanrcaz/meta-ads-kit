@@ -3,6 +3,7 @@ const config = require("./config");
 const { createSlackApp } = require("./slack");
 const { createWebhookRouter } = require("./webhooks");
 const { startScheduler } = require("./scheduler");
+const { loadAccounts } = require("./accounts");
 
 async function main() {
   console.log("┌─────────────────────────────────────┐");
@@ -14,6 +15,9 @@ async function main() {
     console.error("[error] ANTHROPIC_API_KEY is required. Set it in .env");
     process.exit(1);
   }
+
+  // Load multi-account config
+  loadAccounts();
 
   // Start Express for webhooks
   const expressApp = express();

@@ -6,3 +6,4 @@ output/
 node_modules/
 .DS_Store
 server/.env
+server/accounts.json
