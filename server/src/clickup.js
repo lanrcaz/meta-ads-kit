@@ -10,8 +10,9 @@ const headers = {
 /**
  * Create a task in ClickUp.
  */
-async function createTask({ title, description, priority, tags = [] }) {
-  const res = await fetch(`${BASE_URL}/list/${config.clickupListId}/task`, {
+async function createTask({ title, description, priority, tags = [] }, listId = null) {
+  const targetList = listId || config.clickupListId;
+  const res = await fetch(`${BASE_URL}/list/${targetList}/task`, {
     method: "POST",
     headers,
     body: JSON.stringify({
@@ -71,7 +72,7 @@ async function updateTaskStatus(taskId, status) {
  * Create multiple tasks from a task breakdown array.
  * Returns array of { task, clickupResponse }.
  */
-async function createTasksFromBreakdown(tasks) {
+async function createTasksFromBreakdown(tasks, listId = null) {
   const results = [];
 
   for (const task of tasks) {
@@ -80,7 +81,7 @@ async function createTasksFromBreakdown(tasks) {
       description: task.description,
       priority: task.priority,
       tags: ["crimson-meta-agent", ...(task.tags || [])],
-    });
+    }, listId);
     results.push({ task, response });
   }
 

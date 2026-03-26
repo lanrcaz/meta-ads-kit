@@ -3,6 +3,7 @@ const config = require("./config");
 const { runCommand, runScript, parseCommand } = require("./runner");
 const { interpretReport, generateTaskBreakdown, classifyIntent } = require("./claude");
 const clickup = require("./clickup");
+const { resolveAccount, listAccounts } = require("./accounts");
 
 let app;
 
@@ -18,16 +19,31 @@ function createSlackApp() {
   app.event("app_mention", async ({ event, say }) => {
     const text = event.text.replace(/<@[A-Z0-9]+>/g, "").trim();
     const user = event.user;
-    console.log(`[slack] @mention from ${user}: "${text}"`);
-    await handleMessage(text, say, user);
+    const channelId = event.channel;
+    console.log(`[slack] @mention from ${user} in ${channelId}: "${text}"`);
+
+    // Handle "list accounts" / "which accounts" queries
+    if (/list.?accounts|which.?accounts|my.?clients|all.?accounts/i.test(text)) {
+      await say(`*Configured accounts:*\n${listAccounts()}`);
+      return;
+    }
+
+    await handleMessage(text, say, user, channelId);
   });
 
   // Handle DMs
   app.event("message", async ({ event, say }) => {
     if (event.channel_type !== "im" || event.bot_id) return;
     const user = event.user;
+    const channelId = event.channel;
     console.log(`[slack] DM from ${user}: "${event.text}"`);
-    await handleMessage(event.text, say, user);
+
+    if (/list.?accounts|which.?accounts|my.?clients|all.?accounts/i.test(event.text)) {
+      await say(`*Configured accounts:*\n${listAccounts()}`);
+      return;
+    }
+
+    await handleMessage(event.text, say, user, channelId);
   });
 
   // Handle approval button clicks
@@ -49,7 +65,7 @@ function createSlackApp() {
   return app;
 }
 
-async function handleMessage(text, say, userId) {
+async function handleMessage(text, say, userId, channelId) {
   // Try fast pattern matching first, then fall back to Claude intent classification
   let parsed = parseCommand(text);
 
@@ -71,20 +87,25 @@ async function handleMessage(text, say, userId) {
       "• `Budget efficiency` — Cost ranking\n" +
       "• `Recommend budget shifts` — Reallocation\n" +
       "• `Am I on track?` — Spend pacing\n" +
-      "• `Account overview` — Quick summary"
+      "• `Account overview` — Quick summary\n" +
+      "• `List accounts` — Show all configured clients"
     );
     return;
   }
 
-  await say(`Running *${parsed.command}* for <@${userId}>... :hourglass_flowing_sand:`);
+  // Resolve which ad account to use (by channel, by name in message, or default)
+  const account = resolveAccount({ messageText: text, slackChannelId: channelId });
+  const accountLabel = account.name || account.id || "default";
+
+  await say(`Running *${parsed.command}* on *${accountLabel}* for <@${userId}>... :hourglass_flowing_sand:`);
 
   try {
-    // Run the command
+    // Run the command with the resolved account
     let rawOutput;
     if (parsed.script) {
-      rawOutput = await runScript(parsed.script, parsed.args);
+      rawOutput = await runScript(parsed.script, parsed.args, account.id);
     } else {
-      rawOutput = await runCommand(parsed.command, parsed.args);
+      rawOutput = await runCommand(parsed.command, parsed.args, account.id);
     }
 
     // Interpret with Claude
@@ -124,7 +145,8 @@ async function handleMessage(text, say, userId) {
     }
 
     // Create ClickUp tasks if there are actionable findings
-    if (config.clickupApiToken && config.clickupListId) {
+    const clickupList = account.clickupListId || config.clickupListId;
+    if (config.clickupApiToken && clickupList) {
       const tasks = await generateTaskBreakdown(report);
 
       if (tasks.length > 0) {
@@ -156,4 +178,17 @@ async function postToChannel(text) {
   });
 }
 
-module.exports = { createSlackApp, postToChannel };
+/**
+ * Post a message to a specific Slack channel.
+ */
+async function postToSpecificChannel(channelId, text) {
+  if (!app) return;
+
+  await app.client.chat.postMessage({
+    channel: channelId,
+    text,
+    mrkdwn: true,
+  });
+}
+
+module.exports = { createSlackApp, postToChannel, postToSpecificChannel };

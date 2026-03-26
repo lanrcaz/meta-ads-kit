@@ -1,0 +1,39 @@
+{
+  "accounts": [
+    {
+      "id": "act_111111111",
+      "name": "Client A — Acme Corp",
+      "slackChannel": "C0ACME00000",
+      "clickupListId": "list_acme",
+      "benchmarks": {
+        "target_cpa": 25.00,
+        "target_roas": 3.0,
+        "max_frequency": 3.5,
+        "min_ctr": 1.0,
+        "max_cpc": 2.50
+      }
+    },
+    {
+      "id": "act_222222222",
+      "name": "Client B — Globex Inc",
+      "slackChannel": "C0GLOBEX000",
+      "clickupListId": "list_globex",
+      "benchmarks": {
+        "target_cpa": 30.00,
+        "target_roas": 2.5,
+        "max_frequency": 4.0,
+        "min_ctr": 0.8,
+        "max_cpc": 3.00
+      }
+    }
+  ],
+  "defaults": {
+    "benchmarks": {
+      "target_cpa": 25.00,
+      "target_roas": 3.0,
+      "max_frequency": 3.5,
+      "min_ctr": 1.0,
+      "max_cpc": 2.50
+    }
+  }
+}
