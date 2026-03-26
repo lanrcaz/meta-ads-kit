@@ -71,4 +71,4 @@ Respond with ONLY the JSON array, no markdown fences.`,
   }
 }
 
-module.exports = { interpretReport, generateTaskBreakdown };
+module.exports = { interpretReport, generateTaskBreakdown, classifyIntent };

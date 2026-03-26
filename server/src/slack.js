@@ -1,7 +1,7 @@
 const { App } = require("@slack/bolt");
 const config = require("./config");
 const { runCommand, runScript, parseCommand } = require("./runner");
-const { interpretReport, generateTaskBreakdown } = require("./claude");
+const { interpretReport, generateTaskBreakdown, classifyIntent } = require("./claude");
 const clickup = require("./clickup");
 
 let app;
@@ -46,19 +46,28 @@ function createSlackApp() {
 }
 
 async function handleMessage(text, say) {
-  const parsed = parseCommand(text);
+  // Try fast pattern matching first, then fall back to Claude intent classification
+  let parsed = parseCommand(text);
+
+  if (!parsed) {
+    try {
+      parsed = await classifyIntent(text);
+    } catch {
+      // Claude classification failed — fall through to help message
+    }
+  }
 
   if (!parsed) {
     await say(
       "I didn't catch that. Try:\n" +
-      "• `daily check` — Morning briefing\n" +
-      "• `bleeders` — Ads losing money\n" +
-      "• `winners` — Top performers\n" +
-      "• `fatigue` — Creative health\n" +
-      "• `efficiency` — Budget ranking\n" +
-      "• `recommend` — Budget shifts\n" +
-      "• `pacing` — Spend rate\n" +
-      "• `overview` — Account summary"
+      "• `How are my ads doing?` — Morning briefing\n" +
+      "• `Any bleeders I should pause?` — Ads losing money\n" +
+      "• `Which ads should I scale?` — Top performers\n" +
+      "• `Check for creative fatigue` — Creative health\n" +
+      "• `Budget efficiency` — Cost ranking\n" +
+      "• `Recommend budget shifts` — Reallocation\n" +
+      "• `Am I on track?` — Spend pacing\n" +
+      "• `Account overview` — Quick summary"
     );
     return;
   }
