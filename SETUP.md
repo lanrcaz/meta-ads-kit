@@ -1,4 +1,4 @@
-# Meta Ads Copilot — Setup Guide
+# Crimson Meta Agent — Setup Guide
 
 Get your AI ad manager running in 10 minutes.
 

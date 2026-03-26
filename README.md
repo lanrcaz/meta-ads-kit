@@ -1,4 +1,4 @@
-# Meta Ads Copilot
+# Crimson Meta Agent
 
 An open-source AI ad manager that replaces 20 minutes of Ads Manager clicking with a 2-minute summary over coffee.
 
