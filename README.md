@@ -260,7 +260,7 @@ Use Claude Code's `/schedule` to automate daily briefings:
 
 For full two-way integration, run the Crimson server. This gives you:
 
-- **Slack**: Message `@crimson daily check` and get results in-channel
+- **Slack**: Message `@crimsonmeta daily check` and get results in-channel
 - **ClickUp**: Findings auto-create tasks, comment on a task to run commands
 - **Scheduled**: Daily briefing at 8am → Slack alert + ClickUp tasks
 - **Claude API**: Raw data interpreted into human-readable insights
@@ -296,7 +296,7 @@ You (from phone):
 
 ### Slack Commands
 
-Message `@crimson` in any channel or DM:
+Message `@crimsonmeta` in any channel or DM:
 
 | Message | What happens |
 |---------|-------------|
