@@ -1,0 +1,24 @@
+services:
+  crimson:
+    build: .
+    container_name: crimson-meta-agent
+    restart: always
+    ports:
+      - "${PORT:-3000}:3000"
+    env_file:
+      - server/.env
+    volumes:
+      # Persist social-cli auth tokens across restarts
+      - social-cli-config:/root/.social-cli
+      # Persist brand memory and learnings
+      - ./workspace:/app/workspace
+      # Custom benchmarks
+      - ./ad-config.json:/app/ad-config.json:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/webhooks/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  social-cli-config:

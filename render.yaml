@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: crimson-meta-agent
+    runtime: docker
+    plan: starter
+    healthCheckPath: /webhooks/health
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: SLACK_BOT_TOKEN
+        sync: false
+      - key: SLACK_APP_TOKEN
+        sync: false
+      - key: SLACK_SIGNING_SECRET
+        sync: false
+      - key: SLACK_CHANNEL_ID
+        sync: false
+      - key: CLICKUP_API_TOKEN
+        sync: false
+      - key: CLICKUP_LIST_ID
+        sync: false
+      - key: CLICKUP_WEBHOOK_SECRET
+        sync: false
+      - key: DAILY_CRON
+        value: "0 8 * * 1-5"
+      - key: PORT
+        value: "3000"

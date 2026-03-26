@@ -1,8 +1,10 @@
 .env
+server/.env
 ad-config.json
 workspace/
 memory/
 output/
 node_modules/
+.git/
 .DS_Store
-server/.env
+*.log
