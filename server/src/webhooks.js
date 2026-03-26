@@ -10,6 +10,11 @@ function createWebhookRouter() {
 
   // ClickUp webhook endpoint
   router.post("/clickup", express.json(), async (req, res) => {
+    // Handle ClickUp webhook verification challenge
+    if (req.body.event === "verificationRequest") {
+      return res.json({ challenge: req.body.challenge });
+    }
+
     // Verify webhook secret if configured
     if (config.clickupWebhookSecret) {
       const signature = req.headers["x-signature"];

@@ -26,6 +26,22 @@ function createSlackApp() {
     await handleMessage(event.text, say);
   });
 
+  // Handle approval button clicks
+  app.action("approve_action", async ({ body, ack, say }) => {
+    await ack();
+    const action = JSON.parse(body.actions[0].value);
+    const user = body.user.name;
+    await say(
+      `:white_check_mark: *Approved by @${user}.* Executing: ${action.description}\n_Action will run on next cycle._`
+    );
+  });
+
+  app.action("reject_action", async ({ body, ack, say }) => {
+    await ack();
+    const user = body.user.name;
+    await say(`:no_entry_sign: *Rejected by @${user}.* No action taken.`);
+  });
+
   return app;
 }
 
@@ -61,8 +77,38 @@ async function handleMessage(text, say) {
     // Interpret with Claude
     const report = await interpretReport(parsed.command, rawOutput);
 
-    // Post to Slack
-    await say(report);
+    // Post to Slack — include approval buttons for critical findings
+    const hasCritical = /CRITICAL/i.test(report);
+
+    if (hasCritical) {
+      await say({
+        text: report,
+        blocks: [
+          { type: "section", text: { type: "mrkdwn", text: report } },
+          {
+            type: "actions",
+            elements: [
+              {
+                type: "button",
+                text: { type: "plain_text", text: "Approve Actions" },
+                style: "primary",
+                action_id: "approve_action",
+                value: JSON.stringify({ command: parsed.command, description: `Execute recommendations from ${parsed.command}` }),
+              },
+              {
+                type: "button",
+                text: { type: "plain_text", text: "Reject" },
+                style: "danger",
+                action_id: "reject_action",
+                value: "rejected",
+              },
+            ],
+          },
+        ],
+      });
+    } else {
+      await say(report);
+    }
 
     // Create ClickUp tasks if there are actionable findings
     if (config.clickupApiToken && config.clickupListId) {
