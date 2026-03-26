@@ -256,6 +256,70 @@ Use Claude Code's `/schedule` to automate daily briefings:
 
 ---
 
+## Server Mode: Slack + ClickUp Bridge
+
+For full two-way integration, run the Crimson server. This gives you:
+
+- **Slack**: Message `@crimson daily check` and get results in-channel
+- **ClickUp**: Findings auto-create tasks, comment on a task to run commands
+- **Scheduled**: Daily briefing at 8am → Slack alert + ClickUp tasks
+- **Claude API**: Raw data interpreted into human-readable insights
+
+```bash
+cd server
+cp .env.example .env
+# Edit .env with your API keys
+
+npm install
+npm start
+```
+
+### How the flow works
+
+```
+8:00 AM (Cron)
+  │
+  ├──▶ Runs /daily-check
+  ├──▶ Claude interprets raw data
+  ├──▶ Posts briefing to Slack #ads-alerts
+  └──▶ Creates ClickUp tasks for each finding
+         ├── "Pause ad X — bleeding $42/day" (Urgent)
+         ├── "Refresh creative Y — CTR dropped 25%" (High)
+         └── "Scale ad Z — top performer" (Normal)
+
+You (from phone):
+  ├── Read briefing in Slack
+  ├── Reply: "pause that bleeder" → Crimson executes
+  ├── Or: Move ClickUp task to "Approved" → triggers action
+  └── Done in 2 minutes
+```
+
+### Slack Commands
+
+Message `@crimson` in any channel or DM:
+
+| Message | What happens |
+|---------|-------------|
+| `daily check` | Runs the 5 Daily Questions |
+| `any bleeders?` | Finds money-losing ads |
+| `who's winning?` | Shows top performers |
+| `creative fatigue` | Checks for fatigue signals |
+| `budget efficiency` | Ranks campaigns by efficiency |
+| `recommend shifts` | Budget reallocation suggestions |
+| `spend pacing` | Checks spend rate vs budget |
+| `account overview` | High-level summary |
+
+### ClickUp Integration
+
+Tasks are auto-created with:
+- **Priority** mapped from severity (CRITICAL → Urgent, WARNING → High)
+- **Tags**: `crimson-meta-agent` + finding type
+- **Comments**: Full data backing the recommendation
+
+Comment on any Crimson task with a command (e.g., "run bleeders") to trigger a new report — results post back as a comment.
+
+---
+
 ## Configuration
 
 Edit `ad-config.json` to set your benchmarks:
@@ -319,6 +383,16 @@ meta-ads-kit/
 │   ├── settings.json      # Claude Code settings + MCP servers (Slack, ClickUp)
 │   ├── hooks.json         # Session start hooks
 │   └── commands/          # Slash commands (/daily-check, /bleeders, etc.)
+├── server/                    # Two-way Slack + ClickUp bridge server
+│   ├── src/
+│   │   ├── index.js           # Entry point
+│   │   ├── slack.js           # Slack bot (listen + respond)
+│   │   ├── clickup.js         # ClickUp API (tasks + webhooks)
+│   │   ├── claude.js          # Claude API (interpret reports)
+│   │   ├── runner.js          # Shell script executor
+│   │   ├── scheduler.js       # Cron-based daily briefings
+│   │   └── webhooks.js        # ClickUp webhook handler
+│   └── .env.example           # Server environment template
 ├── skills/
 │   ├── meta-ads/             # Core reporting & actions
 │   ├── ad-creative-monitor/  # Creative fatigue tracking
