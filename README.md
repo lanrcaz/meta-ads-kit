@@ -160,6 +160,44 @@ DAILY_CRON=0 8 * * 1-5    # Weekdays at 8am
 
 The briefing runs → posts to Slack → creates ClickUp tasks. You just read and approve from your phone.
 
+### Deploy 24/7 (Multi-User)
+
+For your whole team to use `@crimsonmeta` from anywhere, deploy the server to the cloud.
+
+**Option A: Docker (self-hosted / any VPS)**
+
+```bash
+# 1. Configure
+cp server/.env.example server/.env
+# Edit server/.env with your keys
+
+# 2. Run
+docker compose up -d
+
+# That's it. Runs 24/7 with auto-restart.
+```
+
+**Option B: Railway (one-click cloud)**
+
+1. Fork this repo
+2. Go to [railway.app](https://railway.app) → New Project → Deploy from GitHub
+3. Add environment variables (same as `server/.env.example`)
+4. Deploy — Railway handles the rest
+
+**Option C: Render (one-click cloud)**
+
+1. Fork this repo
+2. Go to [render.com](https://render.com) → New → Blueprint → Connect repo
+3. The `render.yaml` auto-configures everything
+4. Add your secret environment variables
+5. Deploy
+
+All options give you:
+- 24/7 uptime with health checks and auto-restart
+- Everyone on the team messages `@crimsonmeta` on Slack
+- ClickUp tasks auto-created for the whole team
+- Daily briefings on schedule, no laptop needed
+
 ---
 
 ## Claude Code CLI

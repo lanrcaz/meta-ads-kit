@@ -17,13 +17,17 @@ function createSlackApp() {
   // Handle @mentions — natural language commands
   app.event("app_mention", async ({ event, say }) => {
     const text = event.text.replace(/<@[A-Z0-9]+>/g, "").trim();
-    await handleMessage(text, say);
+    const user = event.user;
+    console.log(`[slack] @mention from ${user}: "${text}"`);
+    await handleMessage(text, say, user);
   });
 
   // Handle DMs
   app.event("message", async ({ event, say }) => {
     if (event.channel_type !== "im" || event.bot_id) return;
-    await handleMessage(event.text, say);
+    const user = event.user;
+    console.log(`[slack] DM from ${user}: "${event.text}"`);
+    await handleMessage(event.text, say, user);
   });
 
   // Handle approval button clicks
@@ -45,7 +49,7 @@ function createSlackApp() {
   return app;
 }
 
-async function handleMessage(text, say) {
+async function handleMessage(text, say, userId) {
   // Try fast pattern matching first, then fall back to Claude intent classification
   let parsed = parseCommand(text);
 
@@ -72,7 +76,7 @@ async function handleMessage(text, say) {
     return;
   }
 
-  await say(`Running *${parsed.command}*... :hourglass_flowing_sand:`);
+  await say(`Running *${parsed.command}* for <@${userId}>... :hourglass_flowing_sand:`);
 
   try {
     // Run the command
