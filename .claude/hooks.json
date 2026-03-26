@@ -1,0 +1,10 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": "echo '📣 Meta Ads Copilot ready. Use slash commands: /daily-check /bleeders /winners /fatigue /efficiency /notify-slack /sync-clickup'"
+      }
+    ]
+  }
+}

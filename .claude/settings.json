@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./run.sh *)",
+      "Bash(./skills/*/scripts/*.sh *)",
+      "Bash(social *)",
+      "Bash(jq *)",
+      "Bash(curl *)"
+    ]
+  },
+  "mcpServers": {
+    "slack": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-slack"],
+      "env": {
+        "SLACK_BOT_TOKEN": "${SLACK_BOT_TOKEN}",
+        "SLACK_TEAM_ID": "${SLACK_TEAM_ID}"
+      }
+    },
+    "clickup": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-clickup"],
+      "env": {
+        "CLICKUP_API_TOKEN": "${CLICKUP_API_TOKEN}"
+      }
+    }
+  }
+}

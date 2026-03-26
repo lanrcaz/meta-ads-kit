@@ -2,10 +2,11 @@
 
 An open-source AI ad manager that replaces 20 minutes of Ads Manager clicking with a 2-minute summary over coffee.
 
-Built with [OpenClaw](https://openclaw.ai) — the AI agent framework.
+Works with [Claude Code](https://claude.ai/code) or [OpenClaw](https://openclaw.ai) as your AI agent layer. Integrates with **Slack** and **ClickUp**.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![OpenClaw](https://img.shields.io/badge/Built%20with-OpenClaw-blue)](https://openclaw.ai)
+[![Claude Code](https://img.shields.io/badge/Works%20with-Claude%20Code-blueviolet)](https://claude.ai/code)
+[![OpenClaw](https://img.shields.io/badge/Works%20with-OpenClaw-blue)](https://openclaw.ai)
 
 ---
 
@@ -183,6 +184,78 @@ The agent will run the 5 questions, analyze the results, and message you with fi
 
 ---
 
+## Running With Claude Code
+
+This kit also works with [Claude Code](https://claude.ai/code) — Anthropic's CLI for Claude. It replaces OpenClaw as the agent layer with built-in slash commands, Slack notifications, and ClickUp task sync.
+
+```bash
+# Install Claude Code
+# See https://claude.ai/code for installation
+
+# Navigate to the project
+cd meta-ads-kit
+
+# Start Claude Code
+claude
+```
+
+Then use slash commands:
+
+```
+/daily-check          # Morning briefing (5 Daily Questions)
+/bleeders             # Find ads bleeding money
+/winners              # Top performers to scale
+/fatigue              # Creative fatigue check
+/efficiency           # Budget efficiency analysis
+/recommend            # Budget shift recommendations
+/pacing               # Spend pacing vs daily budgets
+/overview             # High-level account overview
+/copy-gen             # Generate ad copy for image creatives
+/ad-upload            # Push ads to Meta via Graph API
+/pixel-audit          # Audit Meta Pixel setup
+/emq-check            # Event Match Quality scores
+/notify-slack         # Send report to Slack
+/sync-clickup         # Create ClickUp tasks from findings
+```
+
+Or just talk naturally — Claude reads the `CLAUDE.md` and understands the full ad management workflow.
+
+### Slack Integration
+
+Send daily briefings and alerts to Slack channels:
+
+```bash
+# 1. Create a Slack app at https://api.slack.com/apps
+# 2. Add scopes: chat:write, channels:read, channels:history
+# 3. Set environment variables:
+export SLACK_BOT_TOKEN=xoxb-your-token
+export SLACK_TEAM_ID=T00000000
+```
+
+Then use `/notify-slack` to push any report to a Slack channel.
+
+### ClickUp Integration
+
+Convert ad findings into ClickUp tasks automatically:
+
+```bash
+# 1. Get your API token at https://app.clickup.com/settings/apps
+# 2. Set environment variable:
+export CLICKUP_API_TOKEN=pk_your-token
+```
+
+Then use `/sync-clickup` to create tasks from bleeders, fatigue alerts, budget shifts, and other findings.
+
+### Scheduled Briefings
+
+Use Claude Code's `/schedule` to automate daily briefings:
+
+```
+/schedule "Run /daily-check every weekday at 8am and send results to Slack"
+```
+
+---
+
 ## Configuration
 
 Edit `ad-config.json` to set your benchmarks:
@@ -223,8 +296,10 @@ Or just tell the OpenClaw agent your benchmarks conversationally — it'll figur
 |------|-------------|
 | social-cli | Free (open source) |
 | Meta API | Free (your own ad account) |
-| OpenClaw | Free (open source) |
-| **Total** | **$0/mo** |
+| Claude Code | Free tier available / Pro plan |
+| OpenClaw | Free (open source, alternative) |
+| Slack MCP | Free (uses your Slack workspace) |
+| ClickUp MCP | Free (uses your ClickUp account) |
 
 Your Meta ad spend is separate — this kit just helps you manage it smarter.
 
@@ -235,10 +310,15 @@ Your Meta ad spend is separate — this kit just helps you manage it smarter.
 ```
 meta-ads-kit/
 ├── README.md              # You're here
+├── CLAUDE.md              # Claude Code agent instructions
 ├── SETUP.md               # Detailed setup guide
 ├── run.sh                 # Report runner
 ├── .env.example           # Environment template
 ├── ad-config.example.json # Benchmarks template
+├── .claude/
+│   ├── settings.json      # Claude Code settings + MCP servers (Slack, ClickUp)
+│   ├── hooks.json         # Session start hooks
+│   └── commands/          # Slash commands (/daily-check, /bleeders, etc.)
 ├── skills/
 │   ├── meta-ads/             # Core reporting & actions
 │   ├── ad-creative-monitor/  # Creative fatigue tracking
@@ -265,7 +345,7 @@ Ideas for contribution:
 - Creative performance dashboards
 - Automated A/B test analysis
 - Multi-account agency mode
-- Slack/Discord notification integrations
+- Additional MCP server integrations (Discord, Notion, Linear, etc.)
 
 ---
 
