@@ -1,4 +1,4 @@
-# Meta Ads Copilot — Full Spec
+# Crimson Meta Agent — Full Spec
 
 **Created:** Feb 23, 2026
 **Status:** v1.0 — Ready to ship

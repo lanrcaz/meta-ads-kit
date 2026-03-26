@@ -612,7 +612,7 @@ Append to `workspace/brand/assets.md`:
 
 ## Integration
 
-This skill is the downstream piece of the Meta Ads Copilot ecosystem:
+This skill is the downstream piece of the Crimson Meta Agent ecosystem:
 
 - **Upstream (required):** `ad-copy-generator` — produces the asset_feed_spec JSON and copy variants that this skill uploads
 - **Upstream (trigger):** `ad-creative-monitor` — detects creative fatigue and flags ads that need copy refresh; hand off to this skill to push fresh copy

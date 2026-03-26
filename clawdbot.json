@@ -1,6 +1,6 @@
 {
-  "name": "meta-ads-copilot",
-  "displayName": "Meta Ads Copilot",
+  "name": "crimson-meta-agent",
+  "displayName": "Crimson Meta Agent",
   "description": "AI ad manager — daily checks, bleeders, winners, fatigue detection, budget recommendations",
   "version": "1.0.0",
   "author": "@themattberman",

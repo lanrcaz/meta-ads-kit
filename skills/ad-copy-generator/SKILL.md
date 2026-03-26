@@ -297,7 +297,7 @@ If the user provides images and says "write copy for these" without specifying a
 
 ## Integration
 
-This skill connects to the Meta Ads Copilot ecosystem:
+This skill connects to the Crimson Meta Agent ecosystem:
 
 - **Upstream:** `ad-creative-monitor` detects fatigue → triggers copy refresh
 - **Downstream:** Copy output feeds into Meta Graph API ad creation/update
